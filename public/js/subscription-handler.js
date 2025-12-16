@@ -44,15 +44,15 @@ function initSubscriptionForm(config) {
 
             const data = await response.json();
             
+            // Reset form and Turnstile after any response
+            form.reset();
+            if (typeof turnstile !== 'undefined') {
+                turnstile.reset();
+            }
+            
             if (data.success) {
                 showMessage(message, data.message, 'success', config.theme);
-                form.reset();
                 
-                // Reset Turnstile widget
-                if (typeof turnstile !== 'undefined') {
-                    turnstile.reset();
-                }
-
                 // Reset button after delay
                 setTimeout(() => {
                     button.textContent = originalText;
@@ -65,12 +65,6 @@ function initSubscriptionForm(config) {
                 }, 5000);
             } else {
                 showMessage(message, data.message, 'warning', config.theme);
-                
-                // Reset Turnstile widget on failure
-                if (typeof turnstile !== 'undefined') {
-                    turnstile.reset();
-                }
-
                 button.textContent = originalText;
                 button.disabled = false;
 
@@ -78,14 +72,16 @@ function initSubscriptionForm(config) {
                     message.classList.add('hidden');
                 }, 5000);
             }
+
         } catch (error) {
             showMessage(message, 'An error occurred. Please try again.', 'error', config.theme);
             
-            // Reset Turnstile widget on error
+            // Reset form and Turnstile on error
+            form.reset();
             if (typeof turnstile !== 'undefined') {
                 turnstile.reset();
             }
-
+            
             button.textContent = originalText;
             button.disabled = false;
 
@@ -101,30 +97,29 @@ function showMessage(element, text, type, theme = 'dark') {
     element.textContent = text;
 
     // Remove all previous state classes
-    const darkClasses = ['text-green-200', 'bg-green-600/30', 'text-amber-200', 'bg-amber-600/30', 'text-red-200', 'bg-red-600/30',
-                         'text-green-100', 'bg-green-600/30', 'text-amber-100', 'bg-amber-600/30', 'text-red-100', 'bg-red-600/30'];
-    const lightClasses = ['bg-green-50', 'text-green-700', 'border-green-200', 'bg-amber-50', 'text-amber-700', 'border-amber-200', 
-                          'bg-red-50', 'text-red-700', 'border-red-200', 'border'];
-    
-    element.classList.remove(...darkClasses, ...lightClasses);
+    const allClasses = [
+        'text-green-200', 'bg-green-600/30', 'text-amber-200', 'bg-amber-600/30', 'text-red-200', 'bg-red-600/30',
+        'text-green-100', 'bg-green-600/30', 'text-amber-100', 'bg-amber-600/30', 'text-red-100', 'bg-red-600/30',
+        'bg-green-50', 'text-green-700', 'border-green-200', 'bg-amber-50', 'text-amber-700', 'border-amber-200',
+        'bg-red-50', 'text-red-700', 'border-red-200', 'border'
+    ];
+    element.classList.remove(...allClasses);
 
-    // Apply new classes based on type and theme
-    if (theme === 'light') {
-        element.classList.add('border');
-        if (type === 'success') {
-            element.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
-        } else if (type === 'warning') {
-            element.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
-        } else {
-            element.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
+    // Define color schemes
+    const styles = {
+        light: {
+            success: ['border', 'bg-green-50', 'text-green-700', 'border-green-200'],
+            warning: ['border', 'bg-amber-50', 'text-amber-700', 'border-amber-200'],
+            error: ['border', 'bg-red-50', 'text-red-700', 'border-red-200']
+        },
+        dark: {
+            success: ['text-green-200', 'bg-green-600/30'],
+            warning: ['text-amber-200', 'bg-amber-600/30'],
+            error: ['text-red-200', 'bg-red-600/30']
         }
-    } else {
-        if (type === 'success') {
-            element.classList.add('text-green-200', 'bg-green-600/30');
-        } else if (type === 'warning') {
-            element.classList.add('text-amber-200', 'bg-amber-600/30');
-        } else {
-            element.classList.add('text-red-200', 'bg-red-600/30');
-        }
-    }
+    };
+
+    // Apply styles
+    const classes = styles[theme][type] || styles[theme].error;
+    element.classList.add(...classes);
 }
