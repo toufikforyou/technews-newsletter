@@ -65,6 +65,8 @@
                         class="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-slate-500"
                         required
                     >
+                    <!-- Cloudflare Turnstile -->
+                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="dark"></div>
                     <button type="submit" class="w-full px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors shadow-lg shadow-blue-900/20" id="footerSubBtn">Subscribe</button>
                     <div id="footerSubMsg" class="hidden text-sm p-2 rounded"></div>
                 </form>
@@ -92,6 +94,14 @@
             e.preventDefault();
             const email = footerForm.querySelector('input[name="email"]').value;
             const csrfToken = footerForm.querySelector('input[name="_token"]').value;
+            const turnstileResponse = footerForm.querySelector('[name="cf-turnstile-response"]')?.value;
+
+            if (!turnstileResponse) {
+                footerMsg.classList.remove('hidden');
+                footerMsg.classList.add('text-red-100', 'bg-red-600/30');
+                footerMsg.textContent = 'Please complete the security verification.';
+                return;
+            }
 
             footerBtn.disabled = true;
             footerBtn.textContent = 'Subscribing...';
@@ -104,7 +114,10 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
                     },
-                    body: JSON.stringify({ email }),
+                    body: JSON.stringify({ 
+                        email,
+                        'cf-turnstile-response': turnstileResponse
+                    }),
                 });
 
                 const data = await response.json();
@@ -115,6 +128,9 @@
                     footerMsg.classList.add('text-green-100', 'bg-green-600/30');
                     footerMsg.classList.remove('text-amber-100', 'bg-amber-600/30', 'text-red-100', 'bg-red-600/30');
                     footerForm.reset();
+                    if (typeof turnstile !== 'undefined') {
+                        turnstile.reset();
+                    }
                     setTimeout(() => {
                         footerBtn.textContent = 'Subscribe';
                         footerBtn.disabled = false;
@@ -145,3 +161,4 @@
         });
     }
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
