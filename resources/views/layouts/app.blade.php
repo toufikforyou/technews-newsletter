@@ -46,6 +46,9 @@
             @include('partials.footer')
         </div>
 
+        <!-- Cloudflare Turnstile Script -->
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        
         <!-- Subscription Handler Script -->
         <script src="{{ asset('js/subscription-handler.js') }}"></script>
         <script>
