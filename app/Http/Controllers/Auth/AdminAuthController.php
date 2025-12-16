@@ -147,6 +147,11 @@ class AdminAuthController extends Controller
         }
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->filled('remember'))) {
+            // Invalidate all other sessions by regenerating remember token
+            $admin->forceFill([
+                'remember_token' => \Illuminate\Support\Str::random(60),
+            ])->save();
+            
             $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
