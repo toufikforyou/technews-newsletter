@@ -159,6 +159,9 @@ class AdminAuthController extends Controller
         }
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->filled('remember'))) {
+            // Regenerate session first to prevent fixation attacks
+            $request->session()->regenerate();
+            
             // Generate new token for this session
             $newToken = \Illuminate\Support\Str::random(60);
             
@@ -167,9 +170,8 @@ class AdminAuthController extends Controller
                 'remember_token' => $newToken,
             ])->save();
             
-            // Store the token in current session for validation
+            // Store the token in current session for validation AFTER regeneration
             $request->session()->put('admin_session_token', $newToken);
-            $request->session()->regenerate();
             
             return redirect()->intended(route('admin.dashboard'));
         }
