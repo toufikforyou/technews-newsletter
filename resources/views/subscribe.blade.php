@@ -25,6 +25,11 @@
                         />
                     </div>
 
+                    <!-- Cloudflare Turnstile -->
+                    <div>
+                        <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="light"></div>
+                    </div>
+
                     <button
                         type="submit"
                         id="submitBtn"
@@ -55,6 +60,14 @@
             
             const email = document.getElementById('email').value;
             const csrfToken = document.querySelector('input[name="_token"]').value;
+            const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]')?.value;
+
+            if (!turnstileResponse) {
+                messageBox.classList.remove('hidden');
+                messageBox.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                messageBox.textContent = 'Please complete the security verification.';
+                return;
+            }
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Subscribing...';
@@ -67,7 +80,10 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
                     },
-                    body: JSON.stringify({ email }),
+                    body: JSON.stringify({ 
+                        email,
+                        'cf-turnstile-response': turnstileResponse
+                    }),
                 });
 
                 const data = await response.json();
@@ -78,8 +94,10 @@
                 if (data.success) {
                     messageBox.classList.add('bg-green-50', 'text-green-700', 'border', 'border-green-200');
                     messageBox.classList.remove('bg-amber-50', 'text-amber-700', 'border-amber-200', 'bg-red-50', 'text-red-700', 'border-red-200');
-                    form.reset();
-                    setTimeout(() => {
+                    form.reset();                    // Reset Turnstile widget
+                    if (typeof turnstile !== 'undefined') {
+                        turnstile.reset();
+                    }                    setTimeout(() => {
                         submitBtn.textContent = 'Subscribe Now';
                     }, 2000);
                     setTimeout(() => {
@@ -108,3 +126,7 @@
         });
     </script>
 @endsection
+
+@push('scripts')
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+@endpush

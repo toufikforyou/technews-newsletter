@@ -154,28 +154,34 @@
             </p>
 
             <div class="max-w-md mx-auto pt-4">
-                <form id="blogDetailSubForm" class="relative flex items-center bg-white/10 rounded-xl p-2 ring-1 ring-white/20 backdrop-blur-sm">
+                <form id="blogDetailSubForm" class="space-y-3">
                     @csrf
-                    <div class="px-2 text-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                            <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
-                            <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
-                        </svg>
+                    <div class="relative flex items-center bg-white/10 rounded-xl p-2 ring-1 ring-white/20 backdrop-blur-sm">
+                        <div class="px-2 text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+                                <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+                            </svg>
+                        </div>
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            class="w-full bg-transparent border-0 focus:outline-none rounded-lg px-2 text-white placeholder:text-slate-400 h-12"
+                            required
+                        />
+                        <button
+                            type="submit"
+                            id="blogDetailSubBtn"
+                            class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 whitespace-nowrap"
+                        >
+                            Subscribe
+                        </button>
                     </div>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Enter your email"
-                        class="w-full bg-transparent border-0 focus:outline-none rounded-lg px-2 text-white placeholder:text-slate-400 h-12"
-                        required
-                    />
-                    <button
-                        type="submit"
-                        id="blogDetailSubBtn"
-                        class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 whitespace-nowrap"
-                    >
-                        Subscribe
-                    </button>
+                    <!-- Cloudflare Turnstile -->
+                    <div class="flex justify-center">
+                        <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="dark"></div>
+                    </div>
                 </form>
                 <div id="blogDetailSubMsg" class="hidden text-sm p-3 rounded-lg mt-3"></div>
             </div>
@@ -192,6 +198,14 @@
                 e.preventDefault();
                 const email = blogDetailForm.querySelector('input[name="email"]').value;
                 const csrfToken = blogDetailForm.querySelector('input[name="_token"]').value;
+                const turnstileResponse = blogDetailForm.querySelector('[name="cf-turnstile-response"]')?.value;
+
+                if (!turnstileResponse) {
+                    blogDetailMsg.classList.remove('hidden');
+                    blogDetailMsg.classList.add('text-red-100', 'bg-red-600/30');
+                    blogDetailMsg.textContent = 'Please complete the security verification.';
+                    return;
+                }
 
                 blogDetailBtn.disabled = true;
                 blogDetailBtn.textContent = 'Subscribing...';
@@ -204,7 +218,10 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken,
                         },
-                        body: JSON.stringify({ email }),
+                        body: JSON.stringify({ 
+                            email,
+                            'cf-turnstile-response': turnstileResponse
+                        }),
                     });
 
                     const data = await response.json();
@@ -215,6 +232,9 @@
                         blogDetailMsg.classList.add('text-green-100', 'bg-green-600/30');
                         blogDetailMsg.classList.remove('text-amber-100', 'bg-amber-600/30', 'text-red-100', 'bg-red-600/30');
                         blogDetailForm.reset();
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
                         setTimeout(() => {
                             blogDetailBtn.textContent = 'Subscribe';
                             blogDetailBtn.disabled = false;
@@ -246,3 +266,7 @@
         }
     </script>
 @endsection
+
+@push('scripts')
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+@endpush
