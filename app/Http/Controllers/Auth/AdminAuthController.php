@@ -28,15 +28,17 @@ class AdminAuthController extends Controller
             'cf-turnstile-response.required' => 'Please complete the security verification.',
         ]);
 
-        // Verify Turnstile token
-        $turnstileResponse = \Illuminate\Support\Facades\Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-            'secret' => config('services.turnstile.secret_key'),
-            'response' => $request->input('cf-turnstile-response'),
-            'remoteip' => $request->ip(),
-        ]);
+        // Verify Turnstile token (skip in local/development environment)
+        if (!app()->environment('local', 'development')) {
+            $turnstileResponse = \Illuminate\Support\Facades\Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                'secret' => config('services.turnstile.secret_key'),
+                'response' => $request->input('cf-turnstile-response'),
+                'remoteip' => $request->ip(),
+            ]);
 
-        if (!$turnstileResponse->successful() || !$turnstileResponse->json('success')) {
-            return back()->withErrors(['cf-turnstile-response' => 'Security verification failed. Please try again.'])->withInput();
+            if (!$turnstileResponse->successful() || !$turnstileResponse->json('success')) {
+                return back()->withErrors(['cf-turnstile-response' => 'Security verification failed. Please try again.'])->withInput();
+            }
         }
 
         $allowedDomains = array_filter(array_map('trim', explode(',', strtolower(env('ADMIN_ALLOWED_DOMAINS', 'techappupdate.com')))));
@@ -132,8 +134,10 @@ class AdminAuthController extends Controller
             'remoteip' => $request->ip(),
         ]);
 
-        if (!$turnstileResponse->successful() || !$turnstileResponse->json('success')) {
-            return back()->withErrors(['cf-turnstile-response' => 'Security verification failed. Please try again.'])->withInput();
+        if (!app()->environment('local', 'development')) {
+            if (!$turnstileResponse->successful() || !$turnstileResponse->json('success')) {
+                return back()->withErrors(['cf-turnstile-response' => 'Security verification failed. Please try again.'])->withInput();
+            }
         }
 
         $admin = Admin::where('email', $request->email)->first();
