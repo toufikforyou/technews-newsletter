@@ -7,6 +7,7 @@ use App\Mail\SubscriptionConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class SubscribeController extends Controller
 {
@@ -15,7 +16,24 @@ class SubscribeController extends Controller
         try {
             $validated = $request->validate([
                 'email' => 'required|email|max:255',
+                'cf-turnstile-response' => 'required',
+            ], [
+                'cf-turnstile-response.required' => 'Please complete the security verification.',
             ]);
+
+            // Verify Turnstile token
+            $turnstileResponse = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                'secret' => config('services.turnstile.secret_key'),
+                'response' => $request->input('cf-turnstile-response'),
+                'remoteip' => $request->ip(),
+            ]);
+
+            if (!$turnstileResponse->successful() || !$turnstileResponse->json('success')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Security verification failed. Please try again.',
+                ], 200);
+            }
 
             $email = $validated['email'];
 
@@ -59,7 +77,6 @@ class SubscribeController extends Controller
                 'message' => $e->errors()['email'][0] ?? 'Invalid email address.',
             ], 200);
         } catch (\Exception $e) {
-            \Log::error('Subscription error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred. Please try again later.',

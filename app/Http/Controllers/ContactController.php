@@ -6,6 +6,7 @@ use App\Mail\ContactSuccess;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class ContactController extends Controller
@@ -18,7 +19,21 @@ class ContactController extends Controller
             'email' => 'required|email|max:255',
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
+            'cf-turnstile-response' => 'required',
+        ], [
+            'cf-turnstile-response.required' => 'Please complete the security verification.',
         ]);
+
+        // Verify Turnstile token
+        $turnstileResponse = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+            'secret' => config('services.turnstile.secret_key'),
+            'response' => $request->input('cf-turnstile-response'),
+            'remoteip' => $request->ip(),
+        ]);
+
+        if (!$turnstileResponse->successful() || !$turnstileResponse->json('success')) {
+            return back()->withErrors(['cf-turnstile-response' => 'Security verification failed. Please try again.'])->withInput();
+        }
 
         $validated['ticket_id'] = 'TICKET-' . strtoupper(Str::random(8));
 
