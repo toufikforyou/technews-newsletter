@@ -13,14 +13,20 @@ class ContactController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
-            'cf-turnstile-response' => 'required',
-        ], [
+        ];
+
+        // Only require Turnstile in production
+        if (app()->environment('production')) {
+            $rules['cf-turnstile-response'] = 'required';
+        }
+
+        $validated = $request->validate($rules, [
             'cf-turnstile-response.required' => 'Please complete the security verification.',
         ]);
 
