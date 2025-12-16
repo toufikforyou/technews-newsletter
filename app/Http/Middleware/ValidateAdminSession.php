@@ -18,28 +18,22 @@ class ValidateAdminSession
     {
         // Check if admin is authenticated
         if (Auth::guard('admin')->check()) {
+            // Get fresh admin data from database
             $admin = Auth::guard('admin')->user();
+            $freshAdmin = \App\Models\Admin::find($admin->id);
             
-            // Get remember token from cookie (Laravel's default cookie name format)
-            $cookieName = 'remember_admin_' . sha1(get_class(Auth::guard('admin')));
-            $rememberCookie = $request->cookies->get($cookieName);
+            // Get the current session token stored when user logged in
+            $sessionToken = $request->session()->get('admin_session_token');
             
-            // If remember cookie exists
-            if ($rememberCookie) {
-                // Extract token from cookie (format: id|token|hash)
-                $segments = explode('|', $rememberCookie);
-                $tokenFromCookie = $segments[1] ?? null;
+            // Compare session token with database token
+            if (!$sessionToken || !$freshAdmin || $sessionToken !== $freshAdmin->remember_token) {
+                // Token mismatch - session was invalidated from another device
+                Auth::guard('admin')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
                 
-                // Compare with database token
-                if ($tokenFromCookie && $admin->remember_token && $tokenFromCookie !== $admin->remember_token) {
-                    // Token mismatch - session was invalidated from another device
-                    Auth::guard('admin')->logout();
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
-                    
-                    return redirect()->route('admin.login')
-                        ->with('error', 'Your session has been terminated. Please login again.');
-                }
+                return redirect()->route('admin.login')
+                    ->with('error', 'Your session has been terminated because you logged in from another device.');
             }
         }
         
