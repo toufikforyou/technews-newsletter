@@ -21,7 +21,7 @@ class SubscribeController extends Controller
             ]);
 
             // Verify Turnstile token (skip in local/development environment)
-            if (!app()->environment('local', 'development')) {
+            if (app()->environment('production')) {
                 $turnstileResponse = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
                     'secret' => config('services.turnstile.secret_key'),
                     'response' => $request->input('cf-turnstile-response'),

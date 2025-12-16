@@ -29,7 +29,7 @@ class AdminAuthController extends Controller
         ]);
 
         // Verify Turnstile token (skip in local/development environment)
-        if (!app()->environment('local', 'development')) {
+        if (app()->environment('production')) {
             $turnstileResponse = \Illuminate\Support\Facades\Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
                 'secret' => config('services.turnstile.secret_key'),
                 'response' => $request->input('cf-turnstile-response'),
@@ -134,7 +134,7 @@ class AdminAuthController extends Controller
             'remoteip' => $request->ip(),
         ]);
 
-        if (!app()->environment('local', 'development')) {
+        if (app()->environment('production')) {
             if (!$turnstileResponse->successful() || !$turnstileResponse->json('success')) {
                 return back()->withErrors(['cf-turnstile-response' => 'Security verification failed. Please try again.'])->withInput();
             }
