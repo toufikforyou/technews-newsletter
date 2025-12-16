@@ -13,10 +13,16 @@ class SubscribeController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
+            $rules = [
                 'email' => 'required|email|max:255',
-                'cf-turnstile-response' => 'required',
-            ], [
+            ];
+
+            // Only require Turnstile in production
+            if (app()->environment('production')) {
+                $rules['cf-turnstile-response'] = 'required';
+            }
+
+            $validated = $request->validate($rules, [
                 'cf-turnstile-response.required' => 'Please complete the security verification.',
             ]);
 

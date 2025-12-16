@@ -21,10 +21,16 @@ class AdminAuthController extends Controller
     // Handle registration - Step 1: Send OTP
     public function register(Request $request)
     {
-        $request->validate([
+        $rules = [
             'email' => 'required|email',
-            'cf-turnstile-response' => 'required',
-        ], [
+        ];
+
+        // Only require Turnstile in production
+        if (app()->environment('production')) {
+            $rules['cf-turnstile-response'] = 'required';
+        }
+
+        $request->validate($rules, [
             'cf-turnstile-response.required' => 'Please complete the security verification.',
         ]);
 
@@ -119,11 +125,17 @@ class AdminAuthController extends Controller
     // Handle login
     public function login(Request $request)
     {
-        $request->validate([
+        $rules = [
             'email' => 'required|email',
             'password' => 'required',
-            'cf-turnstile-response' => 'required',
-        ], [
+        ];
+
+        // Only require Turnstile in production
+        if (app()->environment('production')) {
+            $rules['cf-turnstile-response'] = 'required';
+        }
+
+        $request->validate($rules, [
             'cf-turnstile-response.required' => 'Please complete the security verification.',
         ]);
 
