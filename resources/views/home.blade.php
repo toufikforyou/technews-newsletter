@@ -33,7 +33,7 @@
                     <!-- Subscription Form -->
                     <form id="heroSubForm" class="max-w-md mb-8">
                         @csrf
-                        <div class="flex gap-3 mb-3">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-3">
                             <input
                                 type="email"
                                 name="email"
@@ -44,7 +44,7 @@
                             <button
                                 type="submit"
                                 id="heroSubBtn"
-                                class="bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-lg shadow-blue-500/20 whitespace-nowrap"
+                                class="bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-lg shadow-blue-500/20 whitespace-nowrap w-full sm:w-auto"
                             >
                                 Subscribe Free
                             </button>
@@ -504,7 +504,3 @@
         }
     </script>
 @endsection
-
-@push('scripts')
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-@endpush
