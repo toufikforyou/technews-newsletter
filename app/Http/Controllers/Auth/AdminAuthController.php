@@ -122,6 +122,9 @@ class AdminAuthController extends Controller
         
         // Store the token in session for validation
         $request->session()->put('admin_session_token', $newToken);
+        
+        // Force save the session to ensure token is persisted before redirect
+        $request->session()->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'Registration successful! Welcome to the admin panel.');
     }
@@ -182,6 +185,9 @@ class AdminAuthController extends Controller
             
             // Store the token in current session for validation AFTER regeneration
             $request->session()->put('admin_session_token', $newToken);
+            
+            // Force save the session to ensure token is persisted before redirect
+            $request->session()->save();
             
             return redirect()->intended(route('admin.dashboard'));
         }
