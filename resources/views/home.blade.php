@@ -31,22 +31,26 @@
                     </p>
 
                     <!-- Subscription Form -->
-                    <form id="heroSubForm" class="flex gap-3 max-w-md mb-8">
+                    <form id="heroSubForm" class="max-w-md mb-8">
                         @csrf
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Enter your email address"
-                            class="flex-1 bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm backdrop-blur-sm"
-                            required
-                        />
-                        <button
-                            type="submit"
-                            id="heroSubBtn"
-                            class="bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-lg shadow-blue-500/20 whitespace-nowrap"
-                        >
-                            Subscribe Free
-                        </button>
+                        <div class="flex gap-3 mb-3">
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                class="flex-1 bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm backdrop-blur-sm"
+                                required
+                            />
+                            <button
+                                type="submit"
+                                id="heroSubBtn"
+                                class="bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-lg shadow-blue-500/20 whitespace-nowrap"
+                            >
+                                Subscribe Free
+                            </button>
+                        </div>
+                        <!-- Cloudflare Turnstile -->
+                        <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="dark"></div>
                     </form>
 
                     <div id="heroSubMsg" class="hidden text-sm p-3 rounded-lg mb-4"></div>
@@ -319,22 +323,28 @@
         <div class="max-w-4xl mx-auto px-6 text-center">
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Stay Informed. Stay Ahead.</h2>
             <p class="text-blue-200 text-lg mb-10 max-w-2xl mx-auto">Join the fastest-growing community of tech professionals and get your weekly news briefing.</p>
-            <form id="bottomCtaForm" class="max-w-md mx-auto relative flex items-center bg-white/10 rounded-xl p-2 ring-1 ring-white/20 backdrop-blur-sm">
+            <form id="bottomCtaForm" class="max-w-md mx-auto space-y-3">
                 @csrf
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter your email address"
-                    class="w-full bg-transparent border-0 focus:outline-none rounded-lg px-4 text-white placeholder:text-slate-400 h-12"
-                    required
-                />
-                <button
-                    type="submit"
-                    id="bottomCtaBtn"
-                    class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 whitespace-nowrap"
-                >
-                    Subscribe Now
-                </button>
+                <div class="relative flex items-center bg-white/10 rounded-xl p-2 ring-1 ring-white/20 backdrop-blur-sm">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email address"
+                        class="w-full bg-transparent border-0 focus:outline-none rounded-lg px-4 text-white placeholder:text-slate-400 h-12"
+                        required
+                    />
+                    <button
+                        type="submit"
+                        id="bottomCtaBtn"
+                        class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 whitespace-nowrap"
+                    >
+                        Subscribe Now
+                    </button>
+                </div>
+                <!-- Cloudflare Turnstile -->
+                <div class="flex justify-center">
+                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="dark"></div>
+                </div>
             </form>
             <div id="bottomCtaMsg" class="hidden text-sm p-3 rounded-lg mt-4 max-w-md mx-auto"></div>
         </div>
@@ -350,6 +360,14 @@
                 e.preventDefault();
                 const email = heroForm.querySelector('input[name="email"]').value;
                 const csrfToken = heroForm.querySelector('input[name="_token"]').value;
+                const turnstileResponse = heroForm.querySelector('[name="cf-turnstile-response"]')?.value;
+
+                if (!turnstileResponse) {
+                    heroMsg.classList.remove('hidden');
+                    heroMsg.classList.add('text-red-200', 'bg-red-600/30');
+                    heroMsg.textContent = 'Please complete the security verification.';
+                    return;
+                }
 
                 heroBtn.disabled = true;
                 heroBtn.textContent = 'Subscribing...';
@@ -362,7 +380,10 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken,
                         },
-                        body: JSON.stringify({ email }),
+                        body: JSON.stringify({ 
+                            email,
+                            'cf-turnstile-response': turnstileResponse
+                        }),
                     });
 
                     const data = await response.json();
@@ -373,6 +394,9 @@
                         heroMsg.classList.add('text-green-200', 'bg-green-600/30');
                         heroMsg.classList.remove('text-amber-200', 'bg-amber-600/30', 'text-red-200', 'bg-red-600/30');
                         heroForm.reset();
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
                         setTimeout(() => {
                             heroBtn.textContent = 'Subscribe Free';
                             heroBtn.disabled = false;
@@ -412,6 +436,14 @@
                 e.preventDefault();
                 const email = bottomCtaForm.querySelector('input[name="email"]').value;
                 const csrfToken = bottomCtaForm.querySelector('input[name="_token"]').value;
+                const turnstileResponse = bottomCtaForm.querySelector('[name="cf-turnstile-response"]')?.value;
+
+                if (!turnstileResponse) {
+                    bottomCtaMsg.classList.remove('hidden');
+                    bottomCtaMsg.classList.add('text-red-200', 'bg-red-600/30');
+                    bottomCtaMsg.textContent = 'Please complete the security verification.';
+                    return;
+                }
 
                 bottomCtaBtn.disabled = true;
                 bottomCtaBtn.textContent = 'Subscribing...';
@@ -424,7 +456,10 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken,
                         },
-                        body: JSON.stringify({ email }),
+                        body: JSON.stringify({ 
+                            email,
+                            'cf-turnstile-response': turnstileResponse
+                        }),
                     });
 
                     const data = await response.json();
@@ -435,6 +470,9 @@
                         bottomCtaMsg.classList.add('text-green-200', 'bg-green-600/30');
                         bottomCtaMsg.classList.remove('text-amber-200', 'bg-amber-600/30', 'text-red-200', 'bg-red-600/30');
                         bottomCtaForm.reset();
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
                         setTimeout(() => {
                             bottomCtaBtn.textContent = 'Subscribe Now';
                             bottomCtaBtn.disabled = false;
@@ -466,3 +504,7 @@
         }
     </script>
 @endsection
+
+@push('scripts')
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+@endpush
