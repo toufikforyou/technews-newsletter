@@ -82,6 +82,6 @@
             © {{ date('Y') }} TechNews Admin Panel
         </p>
     </div>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </body>
 </html>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

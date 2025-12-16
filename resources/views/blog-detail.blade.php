@@ -266,7 +266,3 @@
         }
     </script>
 @endsection
-
-@push('scripts')
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-@endpush
