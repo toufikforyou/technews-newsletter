@@ -350,157 +350,27 @@
         </div>
     </section>
 
+@push('subscription-scripts')
     <script>
-        const heroForm = document.getElementById('heroSubForm');
-        const heroBtn = document.getElementById('heroSubBtn');
-        const heroMsg = document.getElementById('heroSubMsg');
+        // Initialize hero subscription form
+        initSubscriptionForm({
+            formId: 'heroSubForm',
+            buttonId: 'heroSubBtn',
+            messageId: 'heroSubMsg',
+            apiUrl: '{{ route("subscribe.store") }}',
+            loadingText: 'Subscribing...',
+            theme: 'dark'
+        });
 
-        if (heroForm) {
-            heroForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = heroForm.querySelector('input[name="email"]').value;
-                const csrfToken = heroForm.querySelector('input[name="_token"]').value;
-                const turnstileResponse = heroForm.querySelector('[name="cf-turnstile-response"]')?.value;
-
-                if (!turnstileResponse) {
-                    heroMsg.classList.remove('hidden');
-                    heroMsg.classList.add('text-red-200', 'bg-red-600/30');
-                    heroMsg.textContent = 'Please complete the security verification.';
-                    return;
-                }
-
-                heroBtn.disabled = true;
-                heroBtn.textContent = 'Subscribing...';
-                heroMsg.classList.add('hidden');
-
-                try {
-                    const response = await fetch('{{ route("subscribe.store") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                        },
-                        body: JSON.stringify({ 
-                            email,
-                            'cf-turnstile-response': turnstileResponse
-                        }),
-                    });
-
-                    const data = await response.json();
-                    heroMsg.classList.remove('hidden');
-                    heroMsg.textContent = data.message;
-
-                    if (data.success) {
-                        heroMsg.classList.add('text-green-200', 'bg-green-600/30');
-                        heroMsg.classList.remove('text-amber-200', 'bg-amber-600/30', 'text-red-200', 'bg-red-600/30');
-                        heroForm.reset();
-                        if (typeof turnstile !== 'undefined') {
-                            turnstile.reset();
-                        }
-                        setTimeout(() => {
-                            heroBtn.textContent = 'Subscribe Free';
-                            heroBtn.disabled = false;
-                        }, 2000);
-                        setTimeout(() => {
-                            heroMsg.classList.add('hidden');
-                        }, 5000);
-                    } else {
-                        heroMsg.classList.add('text-amber-200', 'bg-amber-600/30');
-                        heroMsg.classList.remove('text-green-200', 'bg-green-600/30', 'text-red-200', 'bg-red-600/30');
-                        heroBtn.textContent = 'Subscribe Free';
-                        heroBtn.disabled = false;
-                        setTimeout(() => {
-                            heroMsg.classList.add('hidden');
-                        }, 5000);
-                    }
-                } catch (error) {
-                    heroMsg.classList.remove('hidden');
-                    heroMsg.classList.add('text-red-200', 'bg-red-600/30');
-                    heroMsg.classList.remove('text-green-200', 'bg-green-600/30', 'text-amber-200', 'bg-amber-600/30');
-                    heroMsg.textContent = 'An error occurred. Please try again.';
-                    heroBtn.textContent = 'Subscribe Free';
-                    heroBtn.disabled = false;
-                    setTimeout(() => {
-                        heroMsg.classList.add('hidden');
-                    }, 5000);
-                }
-            });
-        }
-
-        const bottomCtaForm = document.getElementById('bottomCtaForm');
-        const bottomCtaBtn = document.getElementById('bottomCtaBtn');
-        const bottomCtaMsg = document.getElementById('bottomCtaMsg');
-
-        if (bottomCtaForm) {
-            bottomCtaForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = bottomCtaForm.querySelector('input[name="email"]').value;
-                const csrfToken = bottomCtaForm.querySelector('input[name="_token"]').value;
-                const turnstileResponse = bottomCtaForm.querySelector('[name="cf-turnstile-response"]')?.value;
-
-                if (!turnstileResponse) {
-                    bottomCtaMsg.classList.remove('hidden');
-                    bottomCtaMsg.classList.add('text-red-200', 'bg-red-600/30');
-                    bottomCtaMsg.textContent = 'Please complete the security verification.';
-                    return;
-                }
-
-                bottomCtaBtn.disabled = true;
-                bottomCtaBtn.textContent = 'Subscribing...';
-                bottomCtaMsg.classList.add('hidden');
-
-                try {
-                    const response = await fetch('{{ route("subscribe.store") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                        },
-                        body: JSON.stringify({ 
-                            email,
-                            'cf-turnstile-response': turnstileResponse
-                        }),
-                    });
-
-                    const data = await response.json();
-                    bottomCtaMsg.classList.remove('hidden');
-                    bottomCtaMsg.textContent = data.message;
-
-                    if (data.success) {
-                        bottomCtaMsg.classList.add('text-green-200', 'bg-green-600/30');
-                        bottomCtaMsg.classList.remove('text-amber-200', 'bg-amber-600/30', 'text-red-200', 'bg-red-600/30');
-                        bottomCtaForm.reset();
-                        if (typeof turnstile !== 'undefined') {
-                            turnstile.reset();
-                        }
-                        setTimeout(() => {
-                            bottomCtaBtn.textContent = 'Subscribe Now';
-                            bottomCtaBtn.disabled = false;
-                        }, 2000);
-                        setTimeout(() => {
-                            bottomCtaMsg.classList.add('hidden');
-                        }, 5000);
-                    } else {
-                        bottomCtaMsg.classList.add('text-amber-200', 'bg-amber-600/30');
-                        bottomCtaMsg.classList.remove('text-green-200', 'bg-green-600/30', 'text-red-200', 'bg-red-600/30');
-                        bottomCtaBtn.textContent = 'Subscribe Now';
-                        bottomCtaBtn.disabled = false;
-                        setTimeout(() => {
-                            bottomCtaMsg.classList.add('hidden');
-                        }, 5000);
-                    }
-                } catch (error) {
-                    bottomCtaMsg.classList.remove('hidden');
-                    bottomCtaMsg.classList.add('text-red-200', 'bg-red-600/30');
-                    bottomCtaMsg.classList.remove('text-green-200', 'bg-green-600/30', 'text-amber-200', 'bg-amber-600/30');
-                    bottomCtaMsg.textContent = 'An error occurred. Please try again.';
-                    bottomCtaBtn.textContent = 'Subscribe Now';
-                    bottomCtaBtn.disabled = false;
-                    setTimeout(() => {
-                        bottomCtaMsg.classList.add('hidden');
-                    }, 5000);
-                }
-            });
-        }
+        // Initialize bottom CTA subscription form
+        initSubscriptionForm({
+            formId: 'bottomCtaForm',
+            buttonId: 'bottomCtaBtn',
+            messageId: 'bottomCtaMsg',
+            apiUrl: '{{ route("subscribe.store") }}',
+            loadingText: 'Subscribing...',
+            theme: 'dark'
+        });
     </script>
+@endpush
 @endsection

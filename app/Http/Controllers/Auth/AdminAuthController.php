@@ -100,6 +100,9 @@ class AdminAuthController extends Controller
             return back()->withErrors(['otp' => 'Invalid or expired OTP.']);
         }
 
+        // Generate new token for this session
+        $newToken = \Illuminate\Support\Str::random(60);
+        
         // Update admin details and verify email
         $admin->update([
             'name' => $request->name,
@@ -108,10 +111,20 @@ class AdminAuthController extends Controller
             'email_verified_at' => now(),
             'otp' => null,
             'otp_expires_at' => null,
+            'remember_token' => $newToken,
         ]);
 
         // Log the admin in
         Auth::guard('admin')->login($admin);
+        
+        // Regenerate session for security
+        $request->session()->regenerate();
+        
+        // Store the token in session for validation
+        $request->session()->put('admin_session_token', $newToken);
+        
+        // Force save the session to ensure token is persisted before redirect
+        $request->session()->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'Registration successful! Welcome to the admin panel.');
     }
@@ -159,17 +172,22 @@ class AdminAuthController extends Controller
         }
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->filled('remember'))) {
+            // Regenerate session first to prevent fixation attacks
+            $request->session()->regenerate();
+            
             // Generate new token for this session
             $newToken = \Illuminate\Support\Str::random(60);
             
-            // Update admin's remember token - this invalidates all other sessions
-            $admin->forceFill([
-                'remember_token' => $newToken,
-            ])->save();
+            // Get fresh admin from database and update token
+            $authenticatedAdmin = Admin::find(Auth::guard('admin')->id());
+            $authenticatedAdmin->remember_token = $newToken;
+            $authenticatedAdmin->save();
             
-            // Store the token in current session for validation
+            // Store the token in current session for validation AFTER regeneration
             $request->session()->put('admin_session_token', $newToken);
-            $request->session()->regenerate();
+            
+            // Force save the session to ensure token is persisted before redirect
+            $request->session()->save();
             
             return redirect()->intended(route('admin.dashboard'));
         }
