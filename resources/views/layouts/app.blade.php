@@ -45,5 +45,24 @@
             <!-- Footer -->
             @include('partials.footer')
         </div>
+
+        <!-- Subscription Handler Script -->
+        <script src="{{ asset('js/subscription-handler.js') }}"></script>
+        <script>
+            // Initialize footer subscription form (available on all pages)
+            document.addEventListener('DOMContentLoaded', function() {
+                if (document.getElementById('footerSubForm')) {
+                    initSubscriptionForm({
+                        formId: 'footerSubForm',
+                        buttonId: 'footerSubBtn',
+                        messageId: 'footerSubMsg',
+                        apiUrl: '{{ route("subscribe.store") }}',
+                        loadingText: 'Subscribing...',
+                        theme: 'dark'
+                    });
+                }
+            });
+        </script>
+        @stack('subscription-scripts')
     </body>
 </html>

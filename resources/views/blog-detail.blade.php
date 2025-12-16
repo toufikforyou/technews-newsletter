@@ -188,81 +188,17 @@
         </div>
     </section>
 
+@push('subscription-scripts')
     <script>
-        const blogDetailForm = document.getElementById('blogDetailSubForm');
-        const blogDetailBtn = document.getElementById('blogDetailSubBtn');
-        const blogDetailMsg = document.getElementById('blogDetailSubMsg');
-
-        if (blogDetailForm) {
-            blogDetailForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = blogDetailForm.querySelector('input[name="email"]').value;
-                const csrfToken = blogDetailForm.querySelector('input[name="_token"]').value;
-                const turnstileResponse = blogDetailForm.querySelector('[name="cf-turnstile-response"]')?.value;
-
-                if (!turnstileResponse) {
-                    blogDetailMsg.classList.remove('hidden');
-                    blogDetailMsg.classList.add('text-red-100', 'bg-red-600/30');
-                    blogDetailMsg.textContent = 'Please complete the security verification.';
-                    return;
-                }
-
-                blogDetailBtn.disabled = true;
-                blogDetailBtn.textContent = 'Subscribing...';
-                blogDetailMsg.classList.add('hidden');
-
-                try {
-                    const response = await fetch('{{ route("subscribe.store") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                        },
-                        body: JSON.stringify({ 
-                            email,
-                            'cf-turnstile-response': turnstileResponse
-                        }),
-                    });
-
-                    const data = await response.json();
-                    blogDetailMsg.classList.remove('hidden');
-                    blogDetailMsg.textContent = data.message;
-
-                    if (data.success) {
-                        blogDetailMsg.classList.add('text-green-100', 'bg-green-600/30');
-                        blogDetailMsg.classList.remove('text-amber-100', 'bg-amber-600/30', 'text-red-100', 'bg-red-600/30');
-                        blogDetailForm.reset();
-                        if (typeof turnstile !== 'undefined') {
-                            turnstile.reset();
-                        }
-                        setTimeout(() => {
-                            blogDetailBtn.textContent = 'Subscribe';
-                            blogDetailBtn.disabled = false;
-                        }, 2000);
-                        setTimeout(() => {
-                            blogDetailMsg.classList.add('hidden');
-                        }, 5000);
-                    } else {
-                        blogDetailMsg.classList.add('text-amber-100', 'bg-amber-600/30');
-                        blogDetailMsg.classList.remove('text-green-100', 'bg-green-600/30', 'text-red-100', 'bg-red-600/30');
-                        blogDetailBtn.textContent = 'Subscribe';
-                        blogDetailBtn.disabled = false;
-                        setTimeout(() => {
-                            blogDetailMsg.classList.add('hidden');
-                        }, 5000);
-                    }
-                } catch (error) {
-                    blogDetailMsg.classList.remove('hidden');
-                    blogDetailMsg.classList.add('text-red-100', 'bg-red-600/30');
-                    blogDetailMsg.classList.remove('text-green-100', 'bg-green-600/30', 'text-amber-100', 'bg-amber-600/30');
-                    blogDetailMsg.textContent = 'An error occurred. Please try again.';
-                    blogDetailBtn.textContent = 'Subscribe';
-                    blogDetailBtn.disabled = false;
-                    setTimeout(() => {
-                        blogDetailMsg.classList.add('hidden');
-                    }, 5000);
-                }
-            });
-        }
+        // Initialize blog detail subscription form
+        initSubscriptionForm({
+            formId: 'blogDetailSubForm',
+            buttonId: 'blogDetailSubBtn',
+            messageId: 'blogDetailSubMsg',
+            apiUrl: '{{ route("subscribe.store") }}',
+            loadingText: 'Subscribing...',
+            theme: 'dark'
+        });
     </script>
+@endpush
 @endsection
