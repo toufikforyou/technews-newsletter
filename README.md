@@ -33,11 +33,6 @@ Perfect for tech blogs, news sites, content creators, and businesses looking to 
 | ![About Page](docs/screenshorts/website_about.png) | ![Contact Page](docs/screenshorts/website_contact.png) |
 | Team and mission showcase | Support ticketing system |
 
-| Subscribe Page |
-|----------------|
-| ![Subscribe Page](docs/screenshorts/website%20subcribe%20page.png) |
-| Newsletter signup with confirmation |
-
 </div>
 
 ### 🎛️ Admin Dashboard
