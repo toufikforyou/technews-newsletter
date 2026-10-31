@@ -1,611 +1,217 @@
-# 📰 TechNews Newsletter Platform
-
-> A comprehensive newsletter and blog management system with powerful admin controls, email queue system, and modern responsive design.
-
-![Laravel](https://img.shields.io/badge/Laravel-11.x-FF2D20?style=flat-square&logo=laravel)
-![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat-square&logo=php)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC?style=flat-square&logo=tailwind-css)
-![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=flat-square&logo=mysql&logoColor=white)
-
----
-
-## 🌟 Overview
-
-TechNews is a full-featured newsletter platform built with Laravel 11 and Tailwind CSS. It combines a beautiful public-facing website with a powerful admin dashboard for managing subscribers, publishing blog posts, handling contact requests, and sending newsletters through an asynchronous queue system.
-
-Perfect for tech blogs, news sites, content creators, and businesses looking to build and engage their subscriber base.
-
----
-
-## 📸 Screenshots
-
-### 🌐 Public Website
-
 <div align="center">
 
-| Home Page                                                | Blog Listing                                        |
-| -------------------------------------------------------- | --------------------------------------------------- |
-| ![Website Home Page](docs/screenshorts/website_home.png) | ![Blog Listing](docs/screenshorts/website_blog.png) |
-| Modern landing with hero section                         | Paginated posts with categories                     |
+# TechNews
 
-| About Page                                         | Contact Form                                           |
-| -------------------------------------------------- | ------------------------------------------------------ |
-| ![About Page](docs/screenshorts/website_about.png) | ![Contact Page](docs/screenshorts/website_contact.png) |
-| Team and mission showcase                          | Support ticketing system                               |
+**A newsletter and blog platform with a proper admin dashboard behind it.**
 
-| Subscribe Page                                                     |
-| ------------------------------------------------------------------ |
-| ![Subscribe Page](docs/screenshorts/website%20subcribe%20page.png) |
-| Newsletter signup with confirmation                                |
+Write posts, grow a subscriber list, send newsletters in the background, and answer readers, all from one place.
 
-</div>
+[![Tests](https://github.com/toufikforyou/techblog-newsletter/actions/workflows/phpunit-tests-for-features-and-input-fields.yml/badge.svg)](../../actions)
+[![Laravel 12](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](#requirements)
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)](#requirements)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-### 🎛️ Admin Dashboard
+[Screenshots](#screenshots) · [Features](#features) · [Run it locally](#run-it-locally) · [Deploy](#deploying-to-production)
 
-<div align="center">
+<br />
 
-| Dashboard Overview                                      | Subscriber Management                                               |
-| ------------------------------------------------------- | ------------------------------------------------------------------- |
-| ![Dashboard Home](docs/screenshorts/dashboard_home.png) | ![Subscriber Management](docs/screenshorts/dashboard_subcriber.png) |
-| KPIs and analytics at a glance                          | List, filter, and manage subscribers                                |
-
-| Blog Management                                          | Newsletter Composer                                                       |
-| -------------------------------------------------------- | ------------------------------------------------------------------------- |
-| ![Blog Management](docs/screenshorts/dashboard_blog.png) | ![Newsletter Compose](docs/screenshorts/dashboard_newsletter_compose.png) |
-| Create and publish posts                                 | Send emails to subscribers                                                |
-
-| Contact/Support Tickets                                         |
-| --------------------------------------------------------------- |
-| ![Contact Issues](docs/screenshorts/dashboard_contact_issu.png) |
-| Manage and reply to inquiries                                   |
+<img src="docs/screenshorts/website_home.png" width="820" alt="TechNews home page" />
 
 </div>
 
 ---
 
-## ✨ Features
+## Why I built it
 
-### 🌐 Public Website
+Most newsletter tools are either a hosted service you rent, or a blog with a sign-up box bolted on.
+I wanted both halves in one app I control: a public site where people read and subscribe, and a dashboard
+where I write, send and reply without touching the database.
 
-- **🏠 Landing Page** - Beautiful hero section with testimonials and call-to-action
-- **📝 Dynamic Blog** - SEO-friendly blog posts with categories, tags, and related content
-- **📧 Newsletter Signup** - Email subscription with confirmation system
-- **📞 Contact Form** - Integrated support ticketing with email notifications
-- **📱 Responsive Design** - Mobile-first, works flawlessly on all devices
-- **⚡ Fast Performance** - Optimized assets with Vite bundling
+The part I cared most about is sending. Emails never go out during a web request. They go into a queue, and a
+worker sends them in the background, so a newsletter to thousands of people doesn't freeze the page.
 
-### 🎛️ Admin Dashboard
+## Screenshots
 
-- **📊 Analytics Dashboard** - Real-time KPIs for subscribers, blogs, and support tickets
-- **✍️ Blog Management** - WYSIWYG editor for creating and publishing posts
-- **👥 Subscriber Management** -
-    - Track subscriber status (Active, Unsubscribed, Bounced)
-    - Filter and search subscribers
-    - Delete unsubscribed emails with one click
-    - Export subscriber lists
-- **📬 Newsletter System** -
-    - Rich email composer with preview
-    - Queue-based asynchronous sending
-    - Send to active subscribers or all
-    - Track delivery status
-- **🎫 Support Ticketing** -
-    - Manage contact form submissions
-    - Reply directly from dashboard
-    - Update ticket status
-    - Email notifications
-- **👤 Admin Profile** - Update personal info and password
-- **🔐 Secure Authentication** -
-    - Domain-based admin registration
-    - OTP email verification
-    - Queue-based email delivery
+**Public website**
 
-### 🔧 Technical Features
+| Home | Blog |
+|:---:|:---:|
+| <img src="docs/screenshorts/website_home.png" width="400" alt="Home page" /> | <img src="docs/screenshorts/website_blog.png" width="400" alt="Blog listing" /> |
+| **About** | **Contact** |
+| <img src="docs/screenshorts/website_about.png" width="400" alt="About page" /> | <img src="docs/screenshorts/website_contact.png" width="400" alt="Contact form" /> |
 
-- **⚙️ Queue System** - Background processing for emails and heavy tasks
-- **🗄️ Database Optimization** - Indexed queries and efficient schema
-- **🔒 Security** - CSRF protection, SQL injection prevention, XSS filtering
-- **📧 Email Queue** - Asynchronous email delivery for better performance
-- **🎨 Modern UI** - Material Icons and Tailwind CSS components
-- **🧪 Testing Ready** - Pest PHP testing framework included
+**Admin dashboard**
 
-## 🚀 Quick Start
+| Overview | Subscribers |
+|:---:|:---:|
+| <img src="docs/screenshorts/dashboard_home.png" width="400" alt="Dashboard overview" /> | <img src="docs/screenshorts/dashboard_subcriber.png" width="400" alt="Subscriber management" /> |
+| **Blog posts** | **Newsletter composer** |
+| <img src="docs/screenshorts/dashboard_blog.png" width="400" alt="Blog management" /> | <img src="docs/screenshorts/dashboard_newsletter_compose.png" width="400" alt="Newsletter composer" /> |
 
-### 📋 Requirements
+## Features
 
-- **PHP** 8.4 or higher
-- **Node.js** 18+ and npm
-- **MySQL** 8.0+ (via XAMPP/Lampp or native installation)
-- **Composer** 2.x
-- **Git** (for cloning)
+**For readers**
 
-### ⚡ Installation (Step by Step)
+- A landing page, an about page, and a blog with categories, read times and paginated listings.
+- Newsletter sign-up with a confirmation email. Forms are protected by Cloudflare Turnstile, so bots stay out.
+- A contact form that turns each message into a support ticket and confirms it to the sender by email.
 
-**Step 1: Clone & Navigate**
+**For the admin**
 
-```bash
-git clone https://github.com/toufikforyou/newsletter-project.git
-cd newsletter-project
-```
+- **Dashboard** with the numbers that matter: subscribers, posts and open support tickets.
+- **Blog management:** write, edit, publish and categorise posts.
+- **Subscribers:** search by name or email, filter by status (active, unsubscribed, bounced), mark an address as bounced, and delete people who've unsubscribed.
+- **Newsletter composer:** a rich-text editor (Quill), a test send to yourself first, then a queued send to active subscribers only, or to everyone who hasn't bounced.
+- **Support inbox:** read contact messages, reply by email from the dashboard, and track each ticket's status.
+- **Profile:** update your name and password.
 
-**Step 2: Install Dependencies**
+**Under the hood**
 
-```bash
-composer install
-npm install
-```
+- **Locked-down admin sign-up:** only emails from domains you allow can register, and every sign-up is confirmed with an emailed one-time code.
+- **Queued email:** OTP codes, confirmations, replies and newsletters all go through Laravel's queue.
+- **Tested:** Pest feature tests cover sign-in, blog, subscriber and support management, subscriptions, contact and every public page, and they run on GitHub Actions for each push.
 
-**Step 3: Setup Environment**
+## Tech stack
+
+| | |
+|---|---|
+| **Backend** | Laravel 12 · PHP 8.2+ · Eloquent · database queue |
+| **Frontend** | Blade templates · Tailwind CSS 4 · Vite 7 · Quill editor · Material Icons |
+| **Data** | MySQL 8 |
+| **Email** | SMTP via Laravel Mail, sent from queued jobs |
+| **Security** | Cloudflare Turnstile · email OTP for admins · Laravel's CSRF and validation |
+| **Testing** | Pest · GitHub Actions |
+
+## Run it locally
+
+### Requirements
+
+PHP 8.2+, Composer 2, Node.js 18+ with npm, and MySQL 8 (a native install or XAMPP both work).
+
+### Setup
 
 ```bash
+git clone https://github.com/toufikforyou/techblog-newsletter.git
+cd techblog-newsletter
+
+# Create your .env from the example, then fill in the database and mail settings
 cp .env.example .env
-php artisan key:generate
 ```
 
-**Step 4: Configure Database (Local)**
-
-For **Lampp (XAMPP)** - recommended for local development:
-
-```bash
-# Start Lampp MySQL
-sudo /opt/lampp/lampp startmysql
-
-# Create database using Lampp MySQL
-/opt/lampp/bin/mysql -u root -e "CREATE DATABASE IF NOT EXISTS newsletter_project CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-
-# Update .env file
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://localhost:8000
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=newsletter_project
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-For **native MySQL**:
-
-```bash
-mysql -u root -p
-CREATE DATABASE newsletter_project CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-EXIT;
-
-# Update .env accordingly with your MySQL credentials
-```
-
-**Step 5: Run Migrations**
-
-```bash
-php artisan migrate
-```
-
-**Step 6: Create Storage Symlink**
-
-```bash
-php artisan storage:link
-```
-
-**Step 7: Start Development Server**
-
-All-in-one command (recommended):
-
-```bash
-composer run dev
-```
-
-This starts:
-
-- ✅ Laravel server on `http://127.0.0.1:8000`
-- ✅ Vite asset bundler on `http://localhost:5173`
-- ✅ Queue worker for background jobs
-- ✅ Application logs (Pail)
-
-Or manually in separate terminals:
-
-```bash
-# Terminal 1 - Vite asset bundler
-npm run dev
-
-# Terminal 2 - Laravel server
-php artisan serve
-
-# Terminal 3 - Queue worker (for emails)
-php artisan queue:work
-```
-
-**🎉 Visit: http://localhost:8000**
-
-### 🔑 Admin Access
-
-To create an admin account:
-
-1. Visit `http://localhost:8000/admin/register`
-2. Enter an email from authorized domain (default: `techappupdate.com`)
-3. Check your email for OTP (if queue is running)
-4. Complete registration with name and password
-5. Login at `http://localhost:8000/admin/login`
-
-**Configure allowed domains** in `.env`:
+Open `.env` and set at least these:
 
 ```env
-ADMIN_ALLOWED_DOMAINS=techappupdate.com,yourdomain.com
+DB_DATABASE=technews
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp          # or "log" to write emails to storage/logs while developing
+MAIL_HOST=...
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+
+ADMIN_ALLOWED_DOMAINS=yourdomain.com   # who may create an admin account
+
+# Cloudflare's test keys work locally; use your own in production
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 ```
 
----
-
-## 🗺️ Routes
-
-| Route                           | Description                                     |
-| ------------------------------- | ----------------------------------------------- |
-| `/`                             | Home page with hero, features, and latest blogs |
-| `/about`                        | About page with team information                |
-| `/blog`                         | Blog listing (paginated)                        |
-| `/blog/{slug}`                  | Individual blog post detail page                |
-| `/contact`                      | Contact form & support tickets                  |
-| `/subscribe`                    | Newsletter subscription page                    |
-| `/admin/register`               | Admin registration with OTP                     |
-| `/admin/login`                  | Admin login                                     |
-| `/dashboard`                    | Admin dashboard (protected)                     |
-| `/dashboard/subscribers`        | Subscriber management                           |
-| `/dashboard/blogs`              | Blog post management                            |
-| `/dashboard/contacts`           | Support ticket management                       |
-| `/dashboard/newsletter/compose` | Newsletter composer                             |
-
----
-
-## 🛠️ Tech Stack
-
-| Technology         | Purpose                                     |
-| ------------------ | ------------------------------------------- |
-| **Laravel 11**     | Backend framework with routing, ORM, queues |
-| **Blade**          | Server-side templating engine               |
-| **Tailwind CSS**   | Utility-first CSS framework                 |
-| **Vite**           | Fast frontend build tool & asset bundler    |
-| **MySQL**          | Relational database                         |
-| **Material Icons** | Icon library for UI                         |
-| **Pest PHP**       | Modern testing framework                    |
-| **Queue System**   | Asynchronous job processing                 |
-
----
-
-## 💻 Development
-
-### 🏃 Local Development (Fast Setup)
+Then one command installs everything, generates the app key, runs the migrations and builds the assets:
 
 ```bash
-# Single command to start everything:
-# - Laravel server on http://127.0.0.1:8000
-# - Vite on http://localhost:5173
-# - Queue listener for background jobs
-# - Application logs (pail)
+composer run setup
+```
+
+### Start it
+
+```bash
 composer run dev
 ```
 
-Press `Ctrl+C` to stop all processes.
+This starts the Laravel server on <http://127.0.0.1:8000>, Vite for hot reload, the queue worker that sends
+emails, and a live log tail, all together. Press `Ctrl+C` to stop everything.
 
-### 🔧 Individual Commands
+### Create your admin account
 
-```bash
-# Watch & compile assets (terminal 1)
-npm run dev
+1. Open <http://127.0.0.1:8000/admin/register> and use an email from one of your `ADMIN_ALLOWED_DOMAINS`.
+2. Enter the one-time code from your inbox (or from `storage/logs` if you set `MAIL_MAILER=log`).
+3. Choose a name and password, then sign in at `/admin/login`.
 
-# Laravel development server (terminal 2)
-php artisan serve
+> The queue worker has to be running for any email to arrive. `composer run dev` already starts one.
 
-# Queue listener for emails & jobs (terminal 3)
-php artisan queue:listen
-
-# Tail application logs (terminal 4)
-php artisan pail
-```
-
-### 🧪 Testing
+### Run the tests
 
 ```bash
-# Run all tests
-php artisan test
-
-# Run specific test file
-php artisan test --filter=ExampleTest
+composer run test
 ```
 
-### 🧹 Other Useful Commands
+## Main routes
 
-```bash
-# Clear all caches
-php artisan optimize:clear
+| Public | | Admin | |
+|---|---|---|---|
+| `/` | Home | `/admin/register` | Sign up with OTP |
+| `/blog` | All posts | `/admin/login` | Sign in |
+| `/blog/{slug}` | A single post | `/dashboard` | Overview |
+| `/subscribe` | Join the newsletter | `/dashboard/blogs` | Posts |
+| `/contact` | Contact and support | `/dashboard/subscribers` | Subscribers |
+| `/about` | About | `/dashboard/newsletter/compose` | Write a newsletter |
+| | | `/dashboard/contacts` | Support inbox |
 
-# Generate cache tables (if using database driver)
-php artisan cache:table
-php artisan queue:table
-php artisan migrate
+## Deploying to production
 
-# Create storage symlink
-php artisan storage:link
-```
-
----
-
-## 🚀 Deployment (Production)
-
-### 📝 Pre-Deployment Setup
-
-**Step 1: Environment Configuration**
-
-```bash
-# Create .env for production
-cp .env.example .env
-
-# Set production values
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://yourdomain.com
-
-# Admin allowed domains (comma-separated)
-ADMIN_ALLOWED_DOMAINS=yourdomain.com,anotherdomain.com
-
-# Database (use your production database)
-DB_CONNECTION=mysql
-DB_HOST=your-db-host
-DB_PORT=3306
-DB_DATABASE=newsletter_project
-DB_USERNAME=db_user
-DB_PASSWORD=secure_password
-
-# Mail configuration (update with your SMTP details)
-MAIL_MAILER=smtp
-MAIL_HOST=your-smtp-host
-MAIL_PORT=587
-MAIL_USERNAME=your-email
-MAIL_PASSWORD=your-password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=noreply@yourdomain.com
-MAIL_FROM_NAME="TechNews"
-
-# Cache and Queue (for production stability)
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-```
-
-**Step 2: Generate Application Key**
-
-```bash
-php artisan key:generate
-```
-
-**Step 3: Install & Optimize Dependencies**
+The short version for a VPS or shared host:
 
 ```bash
 composer install --no-dev --optimize-autoloader
-npm install --production
-```
-
-**Step 4: Build Frontend Assets**
-
-```bash
-npm run build
-```
-
-**Step 5: Run Migrations**
-
-```bash
+npm ci && npm run build
 php artisan migrate --force
-```
-
-**Step 6: Create Storage Symlink**
-
-```bash
+php artisan config:cache && php artisan route:cache && php artisan view:cache
 php artisan storage:link
 ```
 
-**Step 7: Cache Configuration & Routes (Performance)**
+Point your web server at the `public/` folder, and set `APP_ENV=production` and `APP_DEBUG=false`.
 
-```bash
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
-**Step 8: Set Permissions**
-
-```bash
-# For Linux/Unix servers
-sudo chown -R www-data:www-data storage bootstrap/cache
-chmod -R 755 storage bootstrap/cache
-```
-
-### 🌐 Web Server Configuration
-
-**Nginx**
-
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
-    root /path/to/newsletter-project/public;
-
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
-```
-
-**Apache** (with `.htaccess` in `public/`)
-
-- Point document root to `public/`
-- Enable `mod_rewrite`
-- Verify `.htaccess` exists in `public/` directory
-
-### 🔄 Running Queue Workers (Background Jobs)
-
-**Critical:** The queue worker must run continuously for:
-
-- Sending newsletter emails
-- OTP verification emails for admin registration
-- Contact form notifications
-- Any background processing
-
-**Option 1: Manual Worker (Testing)**
-
-```bash
-php artisan queue:work --timeout=60
-```
-
-**Option 2: Supervisor (Production - Recommended)**
-
-Create `/etc/supervisor/conf.d/newsletter-queue.conf`:
+**Keep the queue worker running.** Without it, nothing gets sent. Supervisor is the usual way:
 
 ```ini
-[program:newsletter-queue]
-process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/newsletter-project/artisan queue:work --timeout=60 --tries=3
+[program:technews-queue]
+command=php /var/www/technews/artisan queue:work --sleep=3 --tries=3 --timeout=60
 autostart=true
 autorestart=true
 user=www-data
-numprocs=2
+numprocs=1
 redirect_stderr=true
-stdout_logfile=/var/log/newsletter-queue.log
+stdout_logfile=/var/www/technews/storage/logs/queue.log
 ```
 
-Then run:
+After each deploy, run `php artisan queue:restart` so the worker picks up the new code.
 
-```bash
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start newsletter-queue:*
+## Project structure
+
+```text
+app/
+├── Http/Controllers/
+│   ├── Admin/          dashboard, blogs, subscribers, newsletter, contacts, profile
+│   └── Auth/           admin sign-up with OTP, sign-in
+├── Mail/               OTP, subscription confirmation, newsletter, contact reply and confirmation
+└── Models/             Admin, Blog, Subscriber, Contact
+resources/views/        public pages and the admin dashboard (Blade)
+tests/Feature/          Pest feature tests
+docs/screenshorts/      the screenshots above
 ```
 
----
+## Contributing
 
-### 🔍 Monitoring & Maintenance
+Issues and pull requests are welcome. Please run `composer run test` before opening a PR, and add a screenshot
+if you change anything visual.
 
-```bash
-# Check for failed jobs
-php artisan queue:failed
+## Author
 
-# Retry failed jobs
-php artisan queue:retry all
+Built by **MH TOUFIK** · [@toufikforyou](https://github.com/toufikforyou) · [toufikforyou.dev](https://www.toufikforyou.dev)
 
-# Clear old jobs (cleanup)
-php artisan queue:flush
+## License
 
-# Monitor queue in real-time
-php artisan queue:monitor
-
-# Database cleanup for old jobs
-php artisan queue:prune-failed --hours=48
-```
-
----
-
-## 📁 Project Structure
-
-```
-newsletter-project/
-├── app/
-│   ├── Http/
-│   │   └── Controllers/
-│   │       ├── Admin/              # Admin dashboard controllers
-│   │       │   ├── AdminController.php
-│   │       │   ├── BlogController.php
-│   │       │   ├── ContactController.php
-│   │       │   ├── SubscriberController.php
-│   │       │   └── ProfileController.php
-│   │       ├── Auth/
-│   │       │   └── AdminAuthController.php  # Admin auth & OTP
-│   │       ├── BlogPageController.php
-│   │       ├── ContactController.php
-│   │       └── SubscribeController.php
-│   ├── Mail/                      # Email templates
-│   │   ├── AdminOtpMail.php       # Admin OTP verification (queued)
-│   │   ├── ContactReply.php
-│   │   ├── ContactSuccess.php
-│   │   ├── NewsletterEmail.php    # Newsletter composer
-│   │   └── SubscriptionConfirmation.php
-│   └── Models/
-│       ├── Admin.php              # Admin user model
-│       ├── Blog.php               # Blog post model
-│       ├── Contact.php            # Support ticket model
-│       └── Subscriber.php         # Newsletter subscriber
-├── database/
-│   └── migrations/                # Database schema
-├── resources/
-│   ├── views/
-│   │   ├── admin/                 # Admin dashboard views
-│   │   │   ├── dashboard.blade.php
-│   │   │   ├── subscribers/
-│   │   │   ├── blogs/
-│   │   │   ├── contacts/
-│   │   │   └── newsletter/
-│   │   ├── auth/                  # Admin authentication
-│   │   ├── emails/                # Email templates
-│   │   ├── layouts/               # Layout templates
-│   │   ├── partials/              # Reusable components
-│   │   ├── home.blade.php
-│   │   ├── blog.blade.php
-│   │   └── subscribe.blade.php
-│   ├── css/
-│   │   └── app.css               # Tailwind imports
-│   └── js/
-│       └── app.js
-├── routes/
-│   └── web.php                   # All application routes
-├── docs/
-│   └── screenshorts/             # Project screenshots
-├── .env.example                  # Environment template
-├── composer.json                 # PHP dependencies
-├── package.json                  # Node dependencies
-├── vite.config.js               # Vite bundler config
-└── README.md                     # This file
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is open-sourced software licensed under the [MIT license](LICENSE).
-
----
-
-## 👨‍💻 Author
-
-**Toufik**
-
-- GitHub: [@toufikforyou](https://github.com/toufikforyou)
-- Repository: [newsletter-project](https://github.com/toufikforyou/newsletter-project)
-
----
-
-## 🙏 Acknowledgments
-
-- Laravel Framework
-- Tailwind CSS
-- Material Icons
-- The open-source community
-
----
+Released under the [MIT License](LICENSE).
