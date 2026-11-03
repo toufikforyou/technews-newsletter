@@ -6,7 +6,7 @@
 
 Write posts, grow a subscriber list, send newsletters in the background, and answer readers, all from one place.
 
-[![Tests](https://github.com/toufikforyou/newsletter-platform/actions/workflows/phpunit-tests-for-features-and-input-fields.yml/badge.svg)](https://github.com/toufikforyou/newsletter-platform/actions)
+[![Tests](https://github.com/toufikforyou/technews-newsletter/actions/workflows/phpunit-tests-for-features-and-input-fields.yml/badge.svg)](https://github.com/toufikforyou/technews-newsletter/actions)
 [![Laravel 12](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](#requirements)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
@@ -95,8 +95,8 @@ PHP 8.2+, Composer 2, Node.js 18+ with npm, and MySQL 8 (a native install or XAM
 ### Setup
 
 ```bash
-git clone https://github.com/toufikforyou/newsletter-platform.git
-cd newsletter-platform
+git clone https://github.com/toufikforyou/technews-newsletter.git
+cd technews-newsletter
 
 # Create your .env from the example, then fill in the database and mail settings
 cp .env.example .env
@@ -212,7 +212,7 @@ This repository brings together three that grew side by side, so the whole story
 
 | Was | What it held | Where it is now |
 |---|---|---|
-| `newsletter-platform` | The Laravel app from its first commit (Nov 2025), the admin dashboard and the Dec 2025 security work | This repository's own history |
+| `newsletter-platform` (this repository's former name) | The Laravel app from its first commit (Nov 2025), the admin dashboard and the Dec 2025 security work | This repository's own history |
 | `techblog-newsletter` | A continuation from Apr 2026: Turnstile on every form, the feature tests and CI, category filtering, test sends, the TechNews rebrand | Replayed on top of this history, one commit each, with the original authors and dates |
 | `newsletter-project` | The static HTML/CSS/JS prototype (Dec 2025) | Merged in with its history; its newer stylesheet and script are the ones at the root |
 
