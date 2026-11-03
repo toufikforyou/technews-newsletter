@@ -6,14 +6,16 @@
 
 Write posts, grow a subscriber list, send newsletters in the background, and answer readers, all from one place.
 
-[![Tests](https://github.com/toufikforyou/techblog-newsletter/actions/workflows/phpunit-tests-for-features-and-input-fields.yml/badge.svg)](../../actions)
+[![Tests](https://github.com/toufikforyou/newsletter-platform/actions/workflows/phpunit-tests-for-features-and-input-fields.yml/badge.svg)](https://github.com/toufikforyou/newsletter-platform/actions)
 [![Laravel 12](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](#requirements)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)](#requirements)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 
-[Screenshots](#screenshots) · [Features](#features) · [Run it locally](#run-it-locally) · [Deploy](#deploying-to-production)
+**Live:** [techappupdate.com](https://techappupdate.com)
+
+[Screenshots](#screenshots) · [Features](#features) · [Run it locally](#run-it-locally) · [Deploy](#deploying-to-production) · [History](#project-history)
 
 <br />
 
@@ -71,7 +73,7 @@ worker sends them in the background, so a newsletter to thousands of people does
 
 - **Locked-down admin sign-up:** only emails from domains you allow can register, and every sign-up is confirmed with an emailed one-time code.
 - **Queued email:** OTP codes, confirmations, replies and newsletters all go through Laravel's queue.
-- **Tested:** Pest feature tests cover sign-in, blog, subscriber and support management, subscriptions, contact and every public page, and they run on GitHub Actions for each push.
+- **Tested:** feature tests, run with Pest, cover sign-in, blog, subscriber and support management, subscriptions, contact and every public page, and they run on GitHub Actions for each push.
 
 ## Tech stack
 
@@ -93,8 +95,8 @@ PHP 8.2+, Composer 2, Node.js 18+ with npm, and MySQL 8 (a native install or XAM
 ### Setup
 
 ```bash
-git clone https://github.com/toufikforyou/techblog-newsletter.git
-cd techblog-newsletter
+git clone https://github.com/toufikforyou/newsletter-platform.git
+cd newsletter-platform
 
 # Create your .env from the example, then fill in the database and mail settings
 cp .env.example .env
@@ -201,7 +203,20 @@ app/
 resources/views/        public pages and the admin dashboard (Blade)
 tests/Feature/          Pest feature tests
 docs/screenshorts/      the screenshots above
+index.html, css/, js/   the original static prototype of the site, kept for reference
 ```
+
+## Project history
+
+This repository brings together three that grew side by side, so the whole story lives in one place:
+
+| Was | What it held | Where it is now |
+|---|---|---|
+| `newsletter-platform` | The Laravel app from its first commit (Nov 2025), the admin dashboard and the Dec 2025 security work | This repository's own history |
+| `techblog-newsletter` | A continuation from Apr 2026: Turnstile on every form, the feature tests and CI, category filtering, test sends, the TechNews rebrand | Replayed on top of this history, one commit each, with the original authors and dates |
+| `newsletter-project` | The static HTML/CSS/JS prototype (Dec 2025) | Merged in with its history; its newer stylesheet and script are the ones at the root |
+
+Commits that existed in more than one of them were kept once, not twice.
 
 ## Contributing
 
@@ -214,4 +229,4 @@ Built by **MH TOUFIK** · [@toufikforyou](https://github.com/toufikforyou) · [t
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [GNU General Public License v3.0](LICENSE).
